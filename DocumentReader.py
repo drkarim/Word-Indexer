@@ -1,6 +1,9 @@
 import os
 import argparse
 
+# custom libraries
+from InterestingWords import Word, WordsList, WordInformation
+from WordProcessor import TextParser
 '''
     Class represents text file reader   
 
@@ -10,15 +13,13 @@ class DocumentReader:
 
     def __init__(self):
         self.data_folder_path = './data/'
+        self.word_list = WordsList()
 
     '''
         Sets and Gets 
     '''
     def SetDataFolderPath(self, pathname):
         self.data_folder_path = pathname
-
-
-    def StoreDocument 
 
     # Read text file line-by-line
     def ReadDocumentFile(self, filename):
@@ -30,8 +31,9 @@ class DocumentReader:
             lines = file_object.readlines()
             for line in lines:
                 all_lines = all_lines + " " + line
+                TextParser.Text_2_Word(line, self.word_list, filename)
 
-        return all_lines
+
 
 
     # Iterate through only .txt files in a folder
