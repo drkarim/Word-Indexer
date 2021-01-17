@@ -27,7 +27,7 @@ class TextParser:
         sentences = sent_tokenize(text)
 
         for sentence in sentences:
-            words = TextParser.setence_2_word(sentence)
+            words = TextParser.sentence_2_word(sentence)
 
             for word in words:
                 word_list.insert_word(word, sentence, doc_name)
@@ -35,7 +35,7 @@ class TextParser:
         return word_list
 
     @classmethod
-    def setence_2_word(cls, sentence: str):
+    def sentence_2_word(cls, sentence: str):
         """
         Extracts words from a line using whitespace and punctuations as delimiter
 

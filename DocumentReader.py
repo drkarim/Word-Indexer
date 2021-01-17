@@ -34,8 +34,6 @@ class DocumentReader:
                 TextParser.Text_2_Word(line, self.word_list, filename)
 
 
-
-
     # Iterate through only .txt files in a folder
     def ReadDataFolder(self):
 
@@ -46,6 +44,17 @@ class DocumentReader:
             if file_path.endswith('.txt'):          # only .txt files
                 self.ReadDocumentFile(file_path)
 
+    def WriteOutToHTML(self, filename):
+        """
+        Writes the Word index to an HTML file
+        :param filename: Specify filename of the HTML
+
+        """
+        html = self.word_list.to_string(format="html")
+
+        # Write HTML String to file.html
+        with open(filename, "w") as file:
+            file.write(html)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -57,3 +66,5 @@ if __name__ == '__main__':
 
     doc_reader.SetDataFolderPath(args.input)
     doc_reader.ReadDataFolder()
+
+    doc_reader.WriteOutToHTML(args.output)

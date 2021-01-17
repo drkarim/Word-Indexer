@@ -2,7 +2,8 @@
 
 __license__ = "Rashed Karim"
 __revision__ = " $Id: InterestingWords.py 1 2021-01-17 drkarim $ "
-
+import ntpath
+import os
 
 class WordsList:
     """This class encapsulates a container for Words
@@ -67,10 +68,61 @@ class WordsList:
         return -1
 
 
+    def to_string(self, format: str = "html"):
+        """
+        String representation of WordList
+
+        :param format: format: By default uses html
+        :return: returns string representation
+        """
+        content = ""
+        if format == "html":
+
+            content = """
+            <html>
+                <head>
+                    <style>
+                    table, th, td {
+                      border: 1px solid black;
+                    }
+                    </style>
+                </head>
+                <body>
+                    <h2>Word Index</h2>
+            
+            """
+
+            table_header = """
+                <table style="width:100%; border: 1px solid black;"> 
+                    <tr><td>Word (Total Occurences)</td><td>Documents</td><td>Sentences containing the word</td></tr>
+            """
+
+            content = content + table_header
+            for word in self.word_list:
+
+                content = content + "<tr>"
+
+                word_col = "<td>" + word.get_word() + "</td>"
+                doc_col = "<td>" + word.get_word_documents() + "</td>"
+                sentences_col = "<td>" + word.get_word_sentences() + "</td>"
+
+                content = content + word_col + doc_col + sentences_col + "</tr>"
+
+            content = content + "</table></body></html>"
+        else:
+            content = ""
+
+        return content
+
+
+
 
 
 class Word:
-    """This class encapsulates a Word
+    """
+    This class represents a Word
+    A word can have a list of its occurrences. This information lists the sentences and documents the word occurs in.
+
     """
     def __init__(self, word_str: str):
         self.word_str = word_str.lower()
@@ -83,7 +135,7 @@ class Word:
         """
         Insert information about a word as a :class:`WordInformation`
         :param word_information_obj:
-        :return:
+
         """
         if not self.check_word_information_exists(word_information_obj):
             self.word_information_list.append(word_information_obj)
@@ -102,6 +154,31 @@ class Word:
         return self.word_information_list
 
 
+    def get_word_documents(self):
+        """
+        Documents this word occurs in
+        :return: List of documents as a comma separated string
+        """
+        doc_list = []
+        for inf in self.word_information_list:
+            doc_list.append(inf.get_document_name())
+        doc_set = set(doc_list)
+        doc_list_str = ', '.join(doc_set)
+        return doc_list_str
+
+    def get_word_sentences(self):
+        """
+        The sentences in which the word occurs
+
+        :return: A single string representation of all sentences
+        """
+        sentence_list = []
+        for inf in self.word_information_list:
+            sentence_list.append(inf.to_string(format="html"))
+
+        sentence_list_str = '<br /><br />'.join(sentence_list)
+        return sentence_list_str
+
 '''
     Represents the information we store on words. 
     
@@ -113,18 +190,26 @@ class WordInformation:
 
     def __init__(self, sentence: str, document_name: str, word: str = None):
         self.sentence = sentence
-        self.document_name = document_name
+        basename = WordInformation.get_filename_from_any_os_path(document_name)
+        self.document_name = basename
         self.start_index = -1
         self.end_index = -1
 
         if word is not None:
             self.find_word_location(word)
 
+    @classmethod
+    def get_filename_from_any_os_path(cls, file_path):
+        basename = ntpath.basename(file_path)
+        return os.path.splitext(basename)[0]
+
     ''' 
         Set's and Get's 
     '''
     def set_document_name(self, document_name: str):
-        self.document_name = document_name
+        # store basename only
+        basename = WordInformation.get_filename_from_any_os_path(document_name)
+        self.document_name = basename
 
     def set_sentence(self, sentence: str):
         self.sentence = sentence
@@ -174,8 +259,8 @@ class WordInformation:
 
         wordinfo_2_string = ""
         if format == "html":
-            start_quote = "<b>"
-            end_quote = "</b>"
+            start_quote = " <b>"
+            end_quote = "</b> "
         else:
             start_quote = format
             end_quote = format
@@ -185,7 +270,10 @@ class WordInformation:
             end = self.end_index
 
             word_quoted_in_sentence = self.sentence[:start-1] + start_quote + self.sentence[start:end] + end_quote + self.sentence[end+1:]
-            wordinfo_2_string = self.document_name + " CONTAINS " + word_quoted_in_sentence
+
+            # for debugging
+            # wordinfo_2_string = self.document_name + " CONTAINS " + word_quoted_in_sentence
+            wordinfo_2_string = word_quoted_in_sentence
         else:
             wordinfo_2_string = self.to_string()
 
