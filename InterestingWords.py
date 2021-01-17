@@ -4,6 +4,13 @@ __license__ = "Rashed Karim"
 __revision__ = " $Id: InterestingWords.py 1 2021-01-17 drkarim $ "
 import ntpath
 import os
+from nltk.tokenize import word_tokenize
+from nltk import sent_tokenize
+from nltk.corpus import stopwords
+
+
+# custom libraries
+from WordProcessor import WordImportance
 
 class WordsList:
     """This class encapsulates a container for Words
@@ -67,6 +74,11 @@ class WordsList:
 
         return -1
 
+    def sort_word_list(self):
+        """
+        Sorts the list of words by order of the word counts
+        """
+        self.word_list = sorted(self.word_list, key=lambda word: (word.get_word_importance(), word.get_word_count()), reverse=True)
 
     def to_string(self, format: str = "html"):
         """
@@ -94,7 +106,7 @@ class WordsList:
 
             table_header = """
                 <table style="width:100%; border: 1px solid black;"> 
-                    <tr><td>Word (Total Occurences)</td><td>Documents</td><td>Sentences containing the word</td></tr>
+                    <tr><td>Word (Total Occurences)</td><td>Documents</td><td>td-idf</td><td>Sentences containing the word</td></tr>
             """
 
             content = content + table_header
@@ -102,11 +114,12 @@ class WordsList:
 
                 content = content + "<tr>"
 
-                word_col = "<td>" + word.get_word() + "</td>"
+                word_col = "<td>" + word.get_word(count=True) + "</td>"
                 doc_col = "<td>" + word.get_word_documents() + "</td>"
                 sentences_col = "<td>" + word.get_word_sentences() + "</td>"
+                word_imp_col = "<td>" + str(word.get_word_importance()) + "</td>"
 
-                content = content + word_col + doc_col + sentences_col + "</tr>"
+                content = content + word_col + doc_col + word_imp_col + sentences_col + "</tr>"
 
             content = content + "</table></body></html>"
         else:
@@ -115,8 +128,21 @@ class WordsList:
         return content
 
 
+    def insert_word_importance_scores(self, word_importance_dict):
+        """
+          Insert pre-calculated importance scores for words. These are pre-calculated within :class:`WordImportance` class
+          :param word_importance_obj:
 
+        """
 
+        for word in self.word_list:
+
+            word_str = word.get_word()
+            if word_str in word_importance_dict:
+                score = word_importance_dict[word_str]
+                score = round(score, 8)  # round to 4 d.p.
+                if score >= 0:
+                    word.set_word_importance(score)
 
 class Word:
     """
@@ -127,9 +153,38 @@ class Word:
     def __init__(self, word_str: str):
         self.word_str = word_str.lower()
         self.word_information_list = []
+        self.count = 0
+        self.word_importance_score = -1
 
-    def get_word(self):
-        return self.word_str
+
+
+    def get_word_count(self):
+        """
+        :return: the number of occurences of this word
+        """
+        return self.count
+
+    def get_word(self, count=None):
+        """
+            Gets the string word representation
+        """
+        if count is None:
+            return self.word_str
+        else:
+            return self.word_str+ " ("+str(self.count)+")"
+
+    def get_word_importance(self):
+        """
+
+        :return: word importance score between 0-1. A higher score indicates more importance
+        """
+        return self.word_importance_score
+
+    def set_word_importance(self, importance_score):
+        """
+            Sets the pre-computed word importance score
+        """
+        self.word_importance_score = importance_score
 
     def insert_word_information(self, word_information_obj):
         """
@@ -139,6 +194,7 @@ class Word:
         """
         if not self.check_word_information_exists(word_information_obj):
             self.word_information_list.append(word_information_obj)
+            self.count += 1
 
     # Is the exact same information about this word in the list already
     # NEED TO WRITE IMPLEMENTATION
@@ -278,3 +334,63 @@ class WordInformation:
             wordinfo_2_string = self.to_string()
 
         return wordinfo_2_string
+
+
+class TextParser:
+    """
+        Text processing for word extraction and storing them with their associated sentences in memory
+    """
+    @classmethod
+    def text_2_word(cls, text: str, word_list: WordsList, doc_name: str):
+        """
+        Processes any text containing any number of sentences
+        by extracting words and their assoc. sentences
+
+        :param text: the text of the line
+        :return: list of words
+        """
+        sentences = sent_tokenize(text)
+
+        for sentence in sentences:
+            words = TextParser.sentence_2_word(sentence)
+
+            for word in words:
+                word_list.insert_word(word, sentence, doc_name)
+
+        return word_list
+
+    @classmethod
+    def sentence_2_word(cls, sentence: str):
+        """
+        Extracts words from a line using whitespace and punctuations as delimiter
+
+        :param sentence: must be a sentence without punctuation in the end
+        :return: list of words
+        """
+        tokens = word_tokenize(sentence)
+        tokens_lc = [t.lower() for t in tokens]  # lowercase
+        tokens_lc_alpha = [t for t in tokens_lc if t.isalpha()]  # filter punctuation
+
+        # remove stopwords
+        stop_words = set(stopwords.words('english'))
+        stop_words.add('us')
+        words = [w for w in tokens_lc_alpha if not w in stop_words]
+
+        return words
+
+
+
+'''
+text = """ Let me express my thanks to the historic slate of candidates who accompanied me on this journey, 
+            and especially the one who traveled the farthest - a champion for working Americans and an inspiration to my daughters and to yours -- 
+            Hillary Rodham Clinton. To President Clinton, who last night made the case for change as only he can make it; to Ted Kennedy, 
+            who embodies the spirit of service; and to the next Vice President of the United States, 
+            Joe Biden, I thank you. I am grateful to finish this journey with one of the finest statesmen of our time, 
+            a man at ease with everyone from world leaders to the conductors on the Amtrak train he still takes home every night."""
+wl = WordsList()
+
+wl = TextParser.Text_2_Word(text, wl, "doc1")
+word_h = wl.word_list[1].word_information_list[0].to_string(format="html", word="express")
+print(word_h)
+print(wl)
+'''

@@ -3,67 +3,60 @@
 __license__ = "Rashed Karim"
 __revision__ = " $Id: WordProcessor.py 1 2021-01-17 drkarim $ "
 
-# Python libraries
-from nltk.tokenize import word_tokenize
-from nltk import sent_tokenize
-from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
+import numpy as np
 
 # Custom libraries
-from InterestingWords import Word, WordsList, WordInformation
+import InterestingWords
 
-class TextParser:
+
+
+class WordImportance:
     """
-        Text processing for word extraction and storing them with their associated sentences in memory
+        Understands importance of words in a given corpus by calculating an importance score
     """
-    @classmethod
-    def Text_2_Word(cls, text: str, word_list: WordsList, doc_name: str):
+    def __init__(self):
+        self.word_importance_score = {}
+        self.dataset = None
+
+    def set_dataset(self, dataset):
+        self.dataset = dataset
+
+    def get_word_importance_score(self, word: str):
+
+        if word in self.word_importance_score:
+            return self.word_importance_score[word]
+        else:
+            return -1
+
+    def compute_tf_idf(self):
         """
-        Processes any text containing any number of sentences
-        by extracting words and their assoc. sentences
+        Uses SkLearn's built-in Tf-Idf vectoriser to measure importance score for each word in the entire corpus
+        Averages the word's tf-idf across all documents.
+        Note, the averaging does not account for 0 scores for the word in a document,
+        i.e. does not penalise the word for not occuring in a document
 
-        :param text: the text of the line
-        :return: list of words
+        :return: returns the td-idf scores of each word
         """
-        sentences = sent_tokenize(text)
+        tfIdfVectorizer = TfidfVectorizer(use_idf=True)
+        tfidf_vec = tfIdfVectorizer.fit_transform(self.dataset)
 
-        for sentence in sentences:
-            words = TextParser.sentence_2_word(sentence)
+        tfidf = tfidf_vec.todense()
+        # Replacing TFIDF of words given 0 score (not in doc) with nan
+        tfidf[tfidf == 0] = np.nan
+        means = np.nanmean(tfidf, axis=0)
+        means = dict(zip(tfIdfVectorizer.get_feature_names(), means.tolist()[0]))
 
-            for word in words:
-                word_list.insert_word(word, sentence, doc_name)
-
-        return word_list
-
-    @classmethod
-    def sentence_2_word(cls, sentence: str):
-        """
-        Extracts words from a line using whitespace and punctuations as delimiter
-
-        :param sentence: must be a sentence without punctuation in the end
-        :return: list of words
-        """
-        tokens = word_tokenize(sentence)
-        tokens_lc = [t.lower() for t in tokens]  # lowercase
-        tokens_lc_alpha = [t for t in tokens_lc if t.isalpha()]  # filter punctuation
-
-        # remove stopwords
-        stop_words = set(stopwords.words('english'))
-        words = [w for w in tokens_lc_alpha if not w in stop_words]
-
-        return words
-
-
+        return means
 '''
-text = """ Let me express my thanks to the historic slate of candidates who accompanied me on this journey, 
-            and especially the one who traveled the farthest - a champion for working Americans and an inspiration to my daughters and to yours -- 
-            Hillary Rodham Clinton. To President Clinton, who last night made the case for change as only he can make it; to Ted Kennedy, 
-            who embodies the spirit of service; and to the next Vice President of the United States, 
-            Joe Biden, I thank you. I am grateful to finish this journey with one of the finest statesmen of our time, 
-            a man at ease with everyone from world leaders to the conductors on the Amtrak train he still takes home every night."""
-wl = WordsList()
+dataset = [
+    "I enjoy reading about Machine Learning and Machine Learning is my PhD subject",
+    "I would enjoy a walk in the park",
+    "I was reading in the library"
+]
+wi = WordImportance()
+wi.set_dataset(dataset)
+wi.compute_tf_idf()
 
-wl = TextParser.Text_2_Word(text, wl, "doc1")
-word_h = wl.word_list[1].word_information_list[0].to_string(format="html", word="express")
-print(word_h)
-print(wl)
 '''
