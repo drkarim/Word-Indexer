@@ -18,12 +18,21 @@ class DocumentReader:
         self.data_folder_path = pathname
 
 
+    def StoreDocument 
+
     # Read text file line-by-line
     def ReadDocumentFile(self, filename):
 
+        all_lines = ''
+
+        # read all lines within a file into one single line
         with open(filename, 'r') as file_object:
-            line = file_object.readline()
-            print(line)
+            lines = file_object.readlines()
+            for line in lines:
+                all_lines = all_lines + " " + line
+
+        return all_lines
+
 
     # Iterate through only .txt files in a folder
     def ReadDataFolder(self):
