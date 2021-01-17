@@ -14,7 +14,7 @@ import InterestingWords
 
 class WordImportance:
     """
-        Understands importance of words in a given corpus by calculating an importance score
+        Understands importance of words in a given corpus by calculating an importance score for each word
     """
     def __init__(self):
         self.word_importance_score = {}

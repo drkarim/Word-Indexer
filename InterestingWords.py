@@ -74,11 +74,20 @@ class WordsList:
 
         return -1
 
-    def sort_word_list(self):
+    def sort_word_list(self, order: str="iaf"):
         """
-        Sorts the list of words by order of the word counts
+        Sorts words in the list by a specified order
+
+        :param order: string specifying the multiple sort conditions: iaf - interesting and value, fai - frequent and interesting, f - frequent only
+        :return:
         """
-        self.word_list = sorted(self.word_list, key=lambda word: (word.get_word_importance(), word.get_word_count()), reverse=True)
+        if order == "iaf":
+            self.word_list = sorted(self.word_list, key=lambda word: (word.get_word_importance(), word.get_word_count()), reverse=True)
+        elif order == "fai":
+            self.word_list = sorted(self.word_list, key=lambda word: (word.get_word_count(), word.get_word_importance()), reverse=True)
+        elif order == "f":
+            self.word_list = sorted(self.word_list, key=lambda word: word.get_word_count(), reverse=True)
+
 
     def to_string(self, format: str = "html"):
         """
@@ -96,6 +105,7 @@ class WordsList:
                     <style>
                     table, th, td {
                       border: 1px solid black;
+                      vertical-align: top;
                     }
                     </style>
                 </head>

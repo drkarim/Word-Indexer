@@ -56,13 +56,13 @@ class DocumentReader:
             if file_path.endswith('.txt'):          # only .txt files
                 self.ReadDocumentFile(file_path)
 
-    def WriteOutToHTML(self, filename):
+    def WriteOutToHTML(self, filename, sort_order=None):
         """
         Writes the Word index to an HTML file
         :param filename: Specify filename of the HTML
 
         """
-        self.word_list.sort_word_list()
+        self.word_list.sort_word_list(sort_order)
 
         html = self.word_list.to_string(format="html")
 
@@ -72,8 +72,9 @@ class DocumentReader:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", "-i", help="The path to the data files", required=False)
+    parser.add_argument("--input", "-i", help="The path to the data files", required=True)
     parser.add_argument("--output", "-o", help="The path to write the output file", required=False)
+    parser.add_argument("--sortorder", "-s", help="The sorting order, iaf, fai or f", required=False)
 
     args = parser.parse_args()
     doc_reader = DocumentReader()
@@ -81,4 +82,6 @@ if __name__ == '__main__':
     doc_reader.SetDataFolderPath(args.input)
     doc_reader.ReadDataFolder()
     doc_reader.GetWordImportance()
-    doc_reader.WriteOutToHTML(args.output)
+
+    if args.output is not None:
+        doc_reader.WriteOutToHTML(args.output, args.sortorder)
