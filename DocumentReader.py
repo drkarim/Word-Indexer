@@ -1,3 +1,7 @@
+"""High-level Text Document Reader"""
+
+__license__ = "Rashed Karim"
+__revision__ = " $Id: DocumentReader.py 1 2021-01-17 drkarim $ "
 import os
 import argparse
 

@@ -85,7 +85,7 @@ class WordsList:
             self.word_list = sorted(self.word_list, key=lambda word: (word.get_word_importance(), word.get_word_count()), reverse=True)
         elif order == "fai":
             self.word_list = sorted(self.word_list, key=lambda word: (word.get_word_count(), word.get_word_importance()), reverse=True)
-        elif order == "f":
+        else:
             self.word_list = sorted(self.word_list, key=lambda word: word.get_word_count(), reverse=True)
 
 
