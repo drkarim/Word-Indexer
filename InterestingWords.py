@@ -124,7 +124,7 @@ class WordsList:
 
                 content = content + "<tr>"
 
-                word_col = "<td>" + word.get_word(count=True) + "</td>"
+                word_col = "<td>" + word.get_word(count=True).capitalize() + "</td>"
                 doc_col = "<td>" + word.get_word_documents() + "</td>"
                 sentences_col = "<td>" + word.get_word_sentences() + "</td>"
                 word_imp_col = "<td>" + str(word.get_word_importance()) + "</td>"
