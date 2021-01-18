@@ -12,7 +12,9 @@ Code can be found written inside three classes: 
 
 
 ## Instructions to run: 
-- Uncompress the zip file install requirements:   
+- Uncompress the zip file provided
+
+- install requirements:   
 `pip install -r requirements.txt` 
 
 - Run `DocumentReader.py` from command-line using the following: 
