@@ -49,14 +49,3 @@ class WordImportance:
         means = dict(zip(tfIdfVectorizer.get_feature_names(), means.tolist()[0]))
 
         return means
-'''
-dataset = [
-    "I enjoy reading about Machine Learning and Machine Learning is my PhD subject",
-    "I would enjoy a walk in the park",
-    "I was reading in the library"
-]
-wi = WordImportance()
-wi.set_dataset(dataset)
-wi.compute_tf_idf()
-
-'''

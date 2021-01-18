@@ -389,18 +389,3 @@ class TextParser:
         return words
 
 
-
-'''
-text = """ Let me express my thanks to the historic slate of candidates who accompanied me on this journey, 
-            and especially the one who traveled the farthest - a champion for working Americans and an inspiration to my daughters and to yours -- 
-            Hillary Rodham Clinton. To President Clinton, who last night made the case for change as only he can make it; to Ted Kennedy, 
-            who embodies the spirit of service; and to the next Vice President of the United States, 
-            Joe Biden, I thank you. I am grateful to finish this journey with one of the finest statesmen of our time, 
-            a man at ease with everyone from world leaders to the conductors on the Amtrak train he still takes home every night."""
-wl = WordsList()
-
-wl = TextParser.Text_2_Word(text, wl, "doc1")
-word_h = wl.word_list[1].word_information_list[0].to_string(format="html", word="express")
-print(word_h)
-print(wl)
-'''
