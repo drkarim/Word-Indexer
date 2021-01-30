@@ -55,7 +55,6 @@ class WordsList:
             else:
                 return Exception('Location the word was found was out of bounds of the container')
 
-
     def find_word(self, word_str: str):
         """
         Looks for the word by doing a string in lowercase comparision and returns location of match
@@ -166,8 +165,6 @@ class Word:
         self.count = 0
         self.word_importance_score = -1
 
-
-
     def get_word_count(self):
         """
         :return: the number of occurences of this word
@@ -181,7 +178,7 @@ class Word:
         if count is None:
             return self.word_str
         else:
-            return self.word_str+ " ("+str(self.count)+")"
+            return self.word_str + " (" + str(self.count) + ")"
 
     def get_word_importance(self):
         """
@@ -218,7 +215,6 @@ class Word:
         :return: returns a list of :class:`WordInformation` objects
         """
         return self.word_information_list
-
 
     def get_word_documents(self):
         """
@@ -298,7 +294,6 @@ class WordInformation:
             return True
         else:
             return False
-
 
     def get_sentence(self):
         return self.sentence

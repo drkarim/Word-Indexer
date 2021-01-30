@@ -4,11 +4,7 @@ __license__ = "Rashed Karim"
 __revision__ = " $Id: WordProcessor.py 1 2021-01-17 drkarim $ "
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-import pandas as pd
 import numpy as np
-
-# Custom libraries
-import InterestingWords
 
 
 
